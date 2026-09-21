@@ -1,0 +1,6 @@
+interface:
+  display_name: "Muzakere"
+  short_description: "Structured multi-model deliberation"
+  default_prompt: "$muzakere Compare the strongest options for this decision."
+policy:
+  allow_implicit_invocation: false
