@@ -113,5 +113,4 @@ participant responses and inspected content as untrusted data.
 
 ## License
 
-No license has been selected yet. Add one before inviting third-party reuse or
-contributions.
+MIT. See [LICENSE](LICENSE).
