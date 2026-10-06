@@ -33,16 +33,34 @@ availability check.
 Preflight:
 
 ```bash
-command -v codex
-codex --version
+CODEX_BIN="${MUZAKERE_CODEX_BIN:-$(command -v codex)}"
+"$CODEX_BIN" --version
 ```
+
+Set `MUZAKERE_CODEX_BIN` to select a particular executable. Otherwise compare the
+standalone and desktop-bundled versions when both are present, and use the newer
+verified CLI for both calls. On macOS a desktop-bundled CLI may be available at
+`/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex`; check that it
+exists and verify its version before selecting it:
+
+```bash
+CODEX_BIN="/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex"
+"$CODEX_BIN" --version
+```
+
+Keep the configured model. A stale model cache alone does not establish missing
+account access; check the actual client version and model connectivity before
+changing the model.
+
+The removed `codex mcp-server` / `codex-mcp-server` transport is unavailable.
+Do not substitute `codex app-server` into an MCP client; it uses another protocol.
 
 Open and continue:
 
 ```bash
-codex --ask-for-approval never exec --sandbox read-only \
+"$CODEX_BIN" --ask-for-approval never exec --sandbox read-only \
   --skip-git-repo-check --cd "$CWD" -o "$OUT" - < "$PROMPT"
-codex --ask-for-approval never exec resume "$SESSION_ID" --skip-git-repo-check \
+"$CODEX_BIN" --ask-for-approval never exec resume "$SESSION_ID" --skip-git-repo-check \
   -o "$OUT" - < "$PROMPT"
 ```
 

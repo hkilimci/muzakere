@@ -82,6 +82,13 @@ Legacy Codex clients can invoke the optional prompt as:
 /prompts:muzakere Should we split this service into two deployable units?
 ```
 
+## Codex connection
+
+External Codex participants use `codex exec` and `codex exec resume`. The retired
+`codex mcp-server` and `codex-mcp-server` commands are not used. If `PATH` selects
+an older CLI than the desktop app provides, follow the executable selection
+preflight in [Transports](protocol/TRANSPORTS.md#codex--codex-cli).
+
 ## Project layout
 
 ```text
