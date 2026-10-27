@@ -17,6 +17,7 @@ Codex custom prompt for older installations.
 - Consensus, substantive disagreement, incomplete runs, and user-ended runs
   remain separate outcomes.
 - Per-pair stuck detection stops repetitive rounds.
+- ASD-STE100 clarity principles guide plain explanations in every response language.
 - External model calls stay analysis-only and read-only.
 
 ## Requirements
