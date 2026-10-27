@@ -28,6 +28,12 @@ protocol.
 
 - Use shell access to launch participant CLIs. Every participant call must use
   the read-only posture defined in `TRANSPORTS.md`.
-- If the current sandbox blocks a participant process, report that transport
-  failure. Never present a blocked launch as substantive disagreement.
+- Follow the Host launch permissions section in `TRANSPORTS.md`. If the current
+  sandbox blocks API networking or CLI session storage, request launch access
+  through the normal shell approval mechanism and retry the same read-only
+  command. Keep the participant's permission controls unchanged. If approval
+  is denied or unavailable, report the specific transport failure.
+- Verify opening and continuation before admitting a participant. CLI presence
+  and authentication alone do not prove that a model call can complete.
+- Never present a blocked launch as substantive disagreement.
 - Never grant a participant write access or bypass its approval controls.

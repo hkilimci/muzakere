@@ -13,5 +13,5 @@ Read `~/.muzakere/PROTOCOL.md` and `~/.muzakere/TRANSPORTS.md` now, then run tha
 
 ## Host notes
 
-- Running this protocol requires shell access to launch participant CLIs. If the current sandbox forbids running `claude` or `opencode`, say so and stop — do not report a blocked launch as a participant disagreement.
+- Running this protocol requires shell access to launch participant CLIs. Follow the Host launch permissions section in `TRANSPORTS.md`: request approved launch access when the host blocks networking or CLI session storage, retaining all participant read-only controls. If approval is denied or unavailable, report the specific transport failure and stop that participant.
 - Participant calls are read-only analysis calls, but they are still process launches: if approvals are on, expect one prompt per call.

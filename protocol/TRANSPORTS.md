@@ -17,8 +17,8 @@ availability check.
 
 ## Shared rules
 
-- Keep every participant read-only. Never bypass a sandbox or enable automatic
-  write approval.
+- Keep every participant read-only. Never disable its permission controls or
+  sandbox, or enable automatic write approval.
 - Source the prompt from a file. If a CLI only accepts an argument, read that
   argument from the file at call time.
 - Apply an external timeout to every call.
@@ -27,6 +27,33 @@ availability check.
 - Read only the participant's final reply, not the complete event stream.
 - Never expose commands, session handles, or raw transport output to the user.
 - Use the model already configured by the user unless they request another.
+
+## Host launch permissions
+
+The launcher needs API network access and the selected CLI's normal runtime
+storage for authentication, caches, and resumable sessions. Read-only
+participant tools do not remove those requirements. Do not redirect `HOME`,
+`CODEX_HOME`, or `CLAUDE_CONFIG_DIR` to an empty directory to work around them:
+that can select a different login, model, or session store.
+
+If a host sandbox blocks DNS, API access, or runtime storage, request the
+necessary launch access through that host's normal approval mechanism, then
+retry the same read-only command. In Codex, this can require an approved
+`require_escalated` shell call. Approval for the launcher does not grant the
+participant permission to edit project files: retain every read-only and
+approval-denial flag below on both opening and continuation. Never use a
+participant's bypass-permissions or full-access flags as a recovery step.
+
+If launch access is denied or unavailable, report the specific transport
+failure and stop that participant. An installed CLI or successful auth-status
+check does not prove model connectivity. A timeout with no output is not
+evidence of missing model access.
+
+Verified failure pattern on 2026-10-27: a Codex host with restricted networking
+and home-directory writes timed out calling Claude, while diagnostics reported
+`getaddrinfo ENOTFOUND api.anthropic.com` and `EPERM` on Claude session storage.
+The same plan-mode command opened and resumed successfully after approved
+launch access; no participant permission controls were disabled.
 
 ## codex — Codex CLI
 
@@ -60,14 +87,30 @@ Open and continue:
 ```bash
 "$CODEX_BIN" --ask-for-approval never exec --sandbox read-only \
   --skip-git-repo-check --cd "$CWD" -o "$OUT" - < "$PROMPT"
-"$CODEX_BIN" --ask-for-approval never exec resume "$SESSION_ID" --skip-git-repo-check \
-  -o "$OUT" - < "$PROMPT"
+"$CODEX_BIN" -c sandbox_mode='"read-only"' --ask-for-approval never \
+  exec --cd "$CWD" resume "$SESSION_ID" --skip-git-repo-check -o "$OUT" - < "$PROMPT"
 ```
 
 - Capture the session id printed in the opening call's run header.
 - The final message is written to `$OUT` by `-o`.
-- `resume` inherits the opening session configuration and accepts neither
-  `--sandbox` nor `--cd`. The opening call must establish read-only access.
+- `--sandbox` and `--cd` are parent `exec` options: put them before `resume`,
+  not after it. Continuation does NOT reliably inherit the opening sandbox:
+  codex-cli 0.162.0-alpha.17.2 resumed with `sandbox: workspace-write`
+  (verified 2026-10-14). Always pass the global
+  `-c sandbox_mode='"read-only"'` override on continuation. Explicitly set
+  `--ask-for-approval never` and `--cd "$CWD"` on both calls; use the same binary.
+- Before using a reply, inspect only the run header's permission, workdir, and
+  session fields: require `sandbox: read-only`, `approval: never`, and workdir
+  equal to `$CWD` after resolving symlinks. Missing or conflicting metadata is
+  a transport failure; discard the reply and never retry with broader access.
+- On continuation, require the returned session id to equal `$SESSION_ID`.
+  Some versions silently start a new session if the requested id is missing;
+  reject that replacement as a transport failure.
+- Before first use, or after changing the executable version or command recipe,
+  verify both opening and continuation in a disposable scratch directory: a
+  harmless read must succeed and a harmless write must be denied in each call.
+  Never probe writes on project files. Help output alone is insufficient.
+  If permission verification cannot complete, report the transport unavailable.
 - `--skip-git-repo-check` allows questions outside a trusted repository.
 
 ## claude — Claude Code CLI
@@ -75,25 +118,38 @@ Open and continue:
 Preflight:
 
 ```bash
-command -v claude
-claude --version
+CLAUDE_BIN="${MUZAKERE_CLAUDE_BIN:-$(command -v claude)}"
+"$CLAUDE_BIN" --version
 command -v jq
 ```
 
 Open and continue:
 
 ```bash
-claude -p --permission-mode plan --permission-prompts none --output-format json \
+"$CLAUDE_BIN" -p --permission-mode plan --permission-prompts none --output-format json \
+  --tools 'Read,Grep,Glob' --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  --settings '{"disableAllHooks":true}' \
   "$(cat "$PROMPT")" > "$OUT"
-claude -p --resume "$SESSION_ID" --permission-mode plan \
+"$CLAUDE_BIN" -p --resume "$SESSION_ID" --permission-mode plan \
   --permission-prompts none --output-format json \
+  --tools 'Read,Grep,Glob' --strict-mcp-config --mcp-config '{"mcpServers":{}}' \
+  --settings '{"disableAllHooks":true}' \
   "$(cat "$PROMPT")" > "$OUT"
 ```
 
 - Run the command from `$CWD`; Claude Code CLI has no `--cd` flag.
 - Extract `.session_id`, `.result`, and `.is_error` with `jq`.
+- Require a successful exit, `.is_error == false`, a nonempty `.result`, and a
+  nonempty `.session_id`. On continuation the returned id must equal the
+  opening id; reject a replacement session.
 - Confirm that the installed Claude Code version supports the selected
-  read-only permission mode before admitting the participant.
+  read-only permission mode and tool/config flags before admitting the
+  participant. File-reading tools are the only participant tools exposed;
+  shell, editing, MCP tools, and custom hooks are excluded. The orchestrator
+  supplies external evidence that these tools cannot reach.
+- Keep the same verified executable and working directory for both calls.
+  Allow the CLI's own session bookkeeping so `--resume` can find the opening
+  session. Do not use `--no-session-persistence` for this transport.
 
 ## Adding a transport
 

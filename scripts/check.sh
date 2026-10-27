@@ -15,6 +15,9 @@ required_files=(
   "adapters/codex/muzakere/agents/openai.yaml"
   "adapters/codex-legacy-prompt/muzakere.md"
   "scripts/install.sh"
+  "scripts/check-transports.py"
+  "scripts/test_check_transports.py"
+  "scripts/fixtures/codex-0.164.header.txt"
 )
 
 for required_file in "${required_files[@]}"; do
@@ -22,6 +25,7 @@ for required_file in "${required_files[@]}"; do
 done
 
 bash -n scripts/install.sh scripts/check.sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_*.py'
 
 for skill_file in \
   adapters/claude-code/muzakere/SKILL.md \

@@ -3,7 +3,7 @@
 Host-agnostic. This file defines the muzakere; it names no specific model or CLI.
 Transports live in `~/.muzakere/TRANSPORTS.md`. A host adapter binds this protocol to one tool (Claude Code skill, Codex prompt, opencode command, …).
 
-Analysis-only. Nothing in this protocol authorizes modifying files, writing code, or changing a repo. The only permitted side effects are the transport commands and temporary prompt/output files under a scratch directory.
+Analysis-only. Nothing in this protocol authorizes participants to modify files, write code, or change a repo. Permitted side effects are the transport commands, temporary prompt/output files under a scratch directory, and the selected CLI's normal authentication, cache, and session bookkeeping. Host launch access follows TRANSPORTS.md; it never relaxes participant tool permissions.
 
 Goal is not agreement: expose assumptions, challenge weak reasoning, name genuine disagreements, let any side change its mind, converge only when justified.
 
