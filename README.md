@@ -38,7 +38,9 @@ Clone the repository and run:
 
 This installs the shared protocol and the Claude Code and Codex adapters. It
 does not overwrite a different existing installation unless `--force` is
-provided. Forced replacements are backed up with a timestamp.
+provided. Forced replacements are backed up under `~/.muzakere-backups/` with
+a timestamp, outside the skill directories so older copies cannot appear as
+active skills.
 
 For development, symlink the repository files instead of copying them:
 
