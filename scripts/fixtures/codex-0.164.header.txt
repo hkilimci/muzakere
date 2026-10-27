@@ -1,0 +1,13 @@
+OpenAI Codex v0.164.0-alpha.11.1
+--------
+workdir: <WORKDIR>
+model: gpt-6.1-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: xhigh
+reasoning summaries: none
+session id: captured-session
+--------
+user
+Captured prompt omitted.

@@ -3,7 +3,7 @@
 Host-agnostic. This file defines the muzakere; it names no specific model or CLI.
 Transports live in `~/.muzakere/TRANSPORTS.md`. A host adapter binds this protocol to one tool (Claude Code skill, Codex prompt, opencode command, …).
 
-Analysis-only. Nothing in this protocol authorizes modifying files, writing code, or changing a repo. The only permitted side effects are the transport commands and temporary prompt/output files under a scratch directory.
+Analysis-only. Nothing in this protocol authorizes participants to modify files, write code, or change a repo. Permitted side effects are the transport commands, temporary prompt/output files under a scratch directory, and the selected CLI's normal authentication, cache, and session bookkeeping. Host launch access follows TRANSPORTS.md; it never relaxes participant tool permissions.
 
 Goal is not agreement: expose assumptions, challenge weak reasoning, name genuine disagreements, let any side change its mind, converge only when justified.
 
@@ -84,7 +84,7 @@ The orchestrator never edits, merges, or improves a digest. If a digest is missi
 
 If `HOST_IS_PARTICIPANT`, first write down P0's provisional position before contacting anyone: conclusion, strongest reasons, key assumptions, confidence 0–100. Keep it for the record; do not reveal it. This record is what later makes "P0 changed position" checkable rather than a claim.
 
-Open a NEW session per participant (TRANSPORTS.md). Send every participant the SAME prompt: the central question, subquestions, decision criteria, factual basis, and:
+Open a NEW session per participant (TRANSPORTS.md). Send every participant the SAME prompt: the central question, subquestions, decision criteria, factual basis, the clear-language instruction from §16, and:
 
 > "You are participant <name> in a structured muzakere with <count> other participant(s). Analyze the question independently — you have not been shown anyone else's position. Read the named files yourself. Return: 1. conclusion, 2. strongest reasons, 3. important assumptions, 4. strongest argument against your own conclusion, 5. important uncertainties, 6. confidence 0–100, 7. DIGEST: ≤80 words, first person, conclusion + strongest reason + sharpest open objection — this exact text will be shown verbatim to the other participants. Be critical and truth-seeking. Do not agree for politeness. No private chain-of-thought. Do not modify files or code."
 
@@ -108,6 +108,8 @@ While material disagreement remains, continue each participant's own session. Se
 - evidence or assumptions found since its last turn.
 
 Ask each for: 1. direct response to the strongest objection against it, 2. the weakest point in the opposing reasoning, 3. whether its position changed, 4. anything it now concedes, 5. the single most important remaining disagreement, 6. updated confidence, 7. a fresh DIGEST.
+
+Include the clear-language instruction from §16 in each continuation prompt.
 
 Then, if `HOST_IS_PARTICIPANT`, P0 genuinely reconsiders and states which of keep / modify / partially concede / fully concede applies, measured against the Phase 1 record. Changing position is a successful outcome, not a failure.
 
@@ -233,3 +235,9 @@ On "Continue muzakere": reuse the same sessions, apply all normal rules, focus O
 ## 16. Behavioral rules
 
 Never declare a winner by role — not the orchestrator for orchestrating, not a participant for objecting. Prefer justified concession over artificial compromise. Steelman a position before rejecting it. Never hide an important unresolved disagreement. Never present a failure as a disagreement. Never let a headcount stand in for an argument. Match the language of the user's question in all user-facing output.
+
+### Clear-language instruction
+
+> Apply ASD-STE100 clarity principles, adapted to the natural structure of the language you use. State the conclusion or current position first. Use short, direct sentences with one main idea each. Remove unnecessary introductions, repetition, and ornate phrasing. Preserve reasons, evidence, uncertainty, and opposing views. Relay participant digests and direct quotes verbatim; do not rewrite them for style.
+
+Apply this instruction to the orchestrator's own prose and participant-authored replies in every language. Required reporting fields, attribution rules, and verbatim relay take priority over brevity.

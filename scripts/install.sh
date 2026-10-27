@@ -111,14 +111,17 @@ for index in "${!sources[@]}"; do
       printf 'Unchanged: %s\n' "$destination_path"
       continue
     fi
-    backup_path="${destination_path}.bak.${timestamp}"
+    relative_destination="${destination_path#"$install_root"/}"
+    backup_base="$install_root/.muzakere-backups/$timestamp/$relative_destination"
+    backup_path="$backup_base"
     backup_suffix=1
     while [[ -e "$backup_path" || -L "$backup_path" ]]; do
-      backup_path="${destination_path}.bak.${timestamp}.${backup_suffix}"
+      backup_path="${backup_base}.${backup_suffix}"
       backup_suffix=$((backup_suffix + 1))
     done
     printf 'Backup: %s -> %s\n' "$destination_path" "$backup_path"
     if [[ "$dry_run" != "true" ]]; then
+      mkdir -p -- "$(dirname -- "$backup_path")"
       mv -- "$destination_path" "$backup_path"
     fi
   fi
