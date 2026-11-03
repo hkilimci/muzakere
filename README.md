@@ -6,8 +6,9 @@ session while external participants independently analyze the question,
 challenge each other, record concessions, and converge only when the evidence
 supports it.
 
-The project currently ships adapters for Claude Code and Codex, plus a legacy
-Codex custom prompt for older installations.
+The project ships one shared agent skill that Claude Code, Codex, and other
+agent CLIs that read `~/.agents/skills` all load, plus a legacy Codex custom
+prompt for older installations.
 
 ## Why Muzakere
 
@@ -38,11 +39,13 @@ Clone the repository and run:
 ./scripts/install.sh all
 ```
 
-This installs the shared protocol and the Claude Code and Codex adapters. It
-does not overwrite a different existing installation unless `--force` is
-provided. Forced replacements are backed up under `~/.muzakere-backups/` with
-a timestamp, outside the skill directories so older copies cannot appear as
-active skills.
+This installs the shared protocol in `~/.muzakere` and the shared skill in
+`~/.agents/skills/muzakere`. Claude Code reaches the same skill through the
+relative symlink `~/.claude/skills/muzakere -> ../../.agents/skills/muzakere`,
+so every host loads one copy. The installer does not overwrite a different
+existing installation unless `--force` is provided. Forced replacements are
+backed up under `~/.muzakere-backups/` with a timestamp, outside the skill
+directories so older copies cannot appear as active skills.
 
 For development, symlink the repository files instead of copying them:
 
@@ -50,7 +53,7 @@ For development, symlink the repository files instead of copying them:
 ./scripts/install.sh --link --force all
 ```
 
-Install only one host adapter:
+Install for one host only (`claude` also adds the shared skill):
 
 ```bash
 ./scripts/install.sh claude
@@ -79,12 +82,12 @@ Codex:
 $muzakere Should we split this service into two deployable units?
 ```
 
-The Codex skill is explicit-only. If a newly installed skill is not visible,
-restart Codex and type `$` or run `/skills` to find it.
+The skill is explicit-only in every host. If a newly installed skill is not
+visible, restart the host; in Codex, type `$` or run `/skills` to find it.
 
-When Codex's host sandbox blocks the participant's API network access or CLI
+When a host sandbox blocks the participant's API network access or CLI
 session storage, approve the specific read-only launch through the normal
-approval mechanism. The adapter requests that access without changing the
+approval mechanism. The skill requests that access without changing the
 participant's read-only controls. See [Host launch permissions](protocol/TRANSPORTS.md#host-launch-permissions).
 
 Legacy Codex clients can invoke the optional prompt as:
@@ -104,8 +107,7 @@ preflight in [Transports](protocol/TRANSPORTS.md#codex--codex-cli).
 
 ```text
 protocol/                         Shared orchestration contract and transports
-adapters/claude-code/muzakere/   Claude Code skill
-adapters/codex/muzakere/         Codex skill
+adapters/agents/muzakere/        Shared skill for Claude Code, Codex, and other agents
 adapters/codex-legacy-prompt/    Legacy Codex custom prompt
 scripts/install.sh               Safe copy/symlink installer
 scripts/check.sh                 Repository validation and install smoke test
