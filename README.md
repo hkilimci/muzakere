@@ -16,6 +16,8 @@ Codex custom prompt for older installations.
 - Claims are attributed to the models that actually endorsed them.
 - Consensus, substantive disagreement, incomplete runs, and user-ended runs
   remain separate outcomes.
+- Final reports open with their outcome and a required positions table; Mermaid
+  diagrams stay optional and never carry the only record.
 - Per-pair stuck detection stops repetitive rounds.
 - ASD-STE100 clarity principles guide plain explanations in every response language.
 - External model calls stay analysis-only and read-only.

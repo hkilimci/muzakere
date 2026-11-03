@@ -18,6 +18,7 @@ Read `~/.muzakere/PROTOCOL.md` and `~/.muzakere/TRANSPORTS.md` now, then run tha
 - `HOST_IS_PARTICIPANT` = protocol default (true with one external participant, false with two or more), unless the user asked for one mode.
 - `ask_user(question, options)` = the `AskUserQuestion` tool.
 - `scratch_dir` = this session's scratchpad directory; fall back to `mktemp -d` if there is none.
+- `RENDERING` = tables yes. Mermaid unknown: terminal drawing of Mermaid fences depends on an optional feature, so use Mermaid only when the user asks for it.
 
 ## Codex transport
 

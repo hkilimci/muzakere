@@ -23,6 +23,9 @@ protocol.
   is available. Otherwise print the question and numbered options, then stop
   for the user's response.
 - `scratch_dir` = a fresh directory created with `mktemp -d`.
+- `RENDERING` = tables yes. Mermaid unknown: table and Mermaid rendering are
+  client settings that vary by version, so use Mermaid only when the user asks
+  for it.
 
 ## Host notes
 
