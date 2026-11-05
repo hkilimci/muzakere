@@ -10,6 +10,7 @@ Read `~/.muzakere/PROTOCOL.md` and `~/.muzakere/TRANSPORTS.md` now, then run tha
 - `HOST_IS_PARTICIPANT` = protocol default (true with one external participant, false with two or more), unless the user asked for one mode.
 - `ask_user(question, options)` = **no structured tool here.** Print the question, then the options as a numbered list, then STOP and wait for the user's next message. Never pick an option yourself.
 - `scratch_dir` = `mktemp -d`.
+- `RENDERING` = protocol default (tables unknown, Mermaid no), unless the user says what their client renders.
 
 ## Host notes
 

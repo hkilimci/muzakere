@@ -21,6 +21,8 @@ An adapter MUST supply:
 - `scratch_dir` — a writable temp directory for prompt and output files.
 - `HOST_IS_PARTICIPANT` — see Roles.
 
+An adapter MAY supply `RENDERING` — what the user's surface renders: `tables` and `mermaid`, each yes / no / unknown. Default: tables unknown, Mermaid no. See §2 Visual layout.
+
 If `PARTICIPANTS` is empty (no transport available), stop. Say so. Offer the host model's own analysis, labeled single-sided, not a muzakere.
 
 ## 1. Roles
@@ -63,7 +65,24 @@ Round format:
 - Position changed: yes/no — if yes, what changed
 ```
 
+A round may show one table, one row per participant, in place of the Current conclusion, Confidence, and Position changed bullets. The other fields stay as bullets below it. Never show the same field in both.
+
 Never show: tool metadata, session IDs, raw JSON, shell commands, private reasoning, bulk verbatim text. Do not restate the question each round.
+
+### Visual layout
+
+Tables and diagrams present the record. They never add claims and never relax the attribution rules above.
+
+- **Tables** are the default for comparisons with repeated fields. Keep them narrow: at most 5 columns, one short phrase per cell. Put longer text in a list below the table.
+- Every cell that states a participant's position keeps its tag and turn reference. A pivotal quote goes in the cell, or in a line directly below the table that names its row.
+- Split a row when its claims come from different participants or turns.
+- Label any classification, grouping, or relationship that the orchestrator created `[inferred]`.
+- Keep participants in the same order in every table. No vote counts, winner highlighting, or confidence bars: they imply evidential strength.
+- Show a changed recommendation and a changed confidence as separate facts. Neither implies movement toward truth.
+- Never put a digest inside a table or diagram. Relay it as verbatim quoted text.
+- Layout and attribution count against the per-round summary budget.
+- **Fallback.** When `RENDERING` says tables do not render, or the surface is too narrow, use a list with the same fields, order, and tags. Unknown support alone does not require the fallback: a narrow table stays readable as raw text.
+- **Mermaid** is optional. Use it only when `RENDERING` says the host renders it or the user asks for it, only for relationships a table shows poorly, and only in diagram types the host renders. Every node and edge carries the same tag and turn reference that text would. Every fact in a diagram also appears in text or a table: a diagram is never the only record. A diagram never replaces the `ask_user` choice.
 
 ## 3. Cross-exposure rule
 
@@ -144,6 +163,8 @@ Exactly one of four, never conflated:
 - **Incomplete** — the muzakere could not run its course: transport failure, recovery cap hit, unusable replies. A failure is NOT a disagreement.
 - **User-ended** — the user stopped it or chose a position.
 
+Every final report opens with one bold line that names its outcome, for example `**Outcome: Incomplete.**`, before any other content.
+
 ## 11. Failure handling
 
 - **Transport unavailable or errors:** retry once, then try that participant's fallback transport (TRANSPORTS.md). If both fail, drop that participant and say so. All participants gone → Incomplete.
@@ -171,11 +192,20 @@ Sessions are reused; assume each participant retains its own context. Send only 
 Consensus requires **unanimity among participants**; identical wording is not required. Majority is not consensus — a 2-against-1 split is a Substantive disagreement with a named dissenter, never a vote. Never force agreement.
 
 ```
+**Outcome: Consensus.** One sentence stating the agreed answer.
+
 ## Question
 The central question, verbatim from Phase 0.
 
 ## Participants
 Who took part, over which transport, and who was removed mid-muzakere.
+
+## Positions and changes
+Required. One row per participant, measured against Phase 1 records and stated confidences.
+
+| Participant | Final conclusion | Confidence (R1 → final) | Recommendation changed | Turn |
+|---|---|---|---|---|
+| <name> | <short phrase> | 70% → 80% | yes: <what> / no | R2 |
 
 ## Consensus
 Only [all] lines — each with a turn reference, plus a short attributed quote for pivotal ones.
@@ -189,9 +219,6 @@ Subset-tagged lines that did not converge, with the dissenter named. Omit only i
 ## Why
 The 2–4 most decisive reasons.
 
-## What changed
-Who changed position, measured against Phase 1 records and stated confidences.
-
 ## Remaining uncertainty
 Only uncertainty that could realistically change the conclusion. If participants relied on the same unverified premise, say so — agreement built on it is correlated, not corroborated.
 ```
@@ -203,12 +230,17 @@ Keep it concise; do not replay the muzakere.
 Round limit hit or stuck, with an important disagreement open. Do NOT pick a winner.
 
 ```
+**Outcome: Substantive disagreement.** One sentence naming what is still open.
+
 ## Question
 The central question, verbatim from Phase 0.
 
-## <participant name>
-Current conclusion, confidence, strongest reason.
-(repeat per participant)
+## Positions
+Required. One row per participant.
+
+| Participant | Current conclusion | Confidence (R1 → final) | Strongest reason | Turn |
+|---|---|---|---|---|
+| <name> | <short phrase> | 80% → 75% | <short phrase> | R3 |
 
 ## Core disagreement
 The exact issue blocking convergence, and which pairs it divides.
